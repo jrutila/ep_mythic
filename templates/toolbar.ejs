@@ -1,0 +1,88 @@
+<div class="start toolbar enabledtoolbar" id="mythic_toolbar">
+    <div class="start">
+      <h3>Start a new adventure!</h3>
+      <label for="focus">Focus:</label>
+      <select name="focus">
+        <option value="0">Standard</option>
+        <option value="1">Horror</option>
+        <option value="2">Action</option>
+        <option value="3">Mystery</option>
+        <option value="4">Social</option>
+        <option value="5">Personal</option>
+        <option value="6">Epic</option>
+      </select>
+      <button id="startMythic">Go!</button>
+    </div>
+    <div>
+      <label for="chaos">Chaos Factor</label>
+      <input name="chaos" type="number" value="5" size="1" min="1" max="9"/>
+    </div>
+    
+    <div>
+      <label for="fate">Fate roll</label>
+      <input name="fate_q" type="text" placeholder="Ask a question" />
+      <select name="fate">
+          <option value="0">Impossible</option>
+          <option value="1">No way</option>
+          <option value="2">Very unlikely</option>
+          <option value="3">Unlikely</option>
+          <option value="4" selected="selected">50/50</option>
+          <option value="5">Somewhat likely</option>
+          <option value="6">Likely</option>
+          <option value="7">Very likely</option>
+          <option value="8">Near sure thing</option>
+          <option value="9">A sure thing</option>
+          <option value="10">Has to be</option>
+      </select>
+      <button id="fate_b">Ask!</button>
+    </div>
+    <div>
+      <input name="scene_n" type="text" placeholder="Describe a scene" />
+      <button id="scene_b">New scene</button>
+      <button id="scene_r">Scene roll</button>
+    </div>
+    <div>
+      <button id="random_n">Get Random!</button>
+    </div>
+</div>
+
+<div id="mythic_sidebar"></div>
+
+<style type="text/css">
+#editorcontainerbox{
+  top:37px;
+}
+.stickyChat{
+  top:75px;
+}
+
+#settings, #importexport, #embed, #connectivity, #users {
+  top:59px;
+}
+</style>
+
+<style type="text/css">
+#mythic_toolbar.start > :not(.start) {
+  display: none;
+}
+
+#mythic_toolbar .start {
+  display: none;
+}
+
+#mythic_toolbar .start h3 {
+  display: inline-block;
+}
+
+#mythic_toolbar.start .start {
+  display: block;
+}
+#mythic_toolbar > div {
+  display: inline-block;
+  float: left;
+}
+
+#mythic_toolbar input[name='chaos'] {
+  width: 28px;
+}
+</style>

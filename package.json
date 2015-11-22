@@ -1,0 +1,13 @@
+{
+  "name": "ep_mythic",
+  "version": "0.0.0",
+  "description": "A Mythic Game Emulator plugin for Etherpad",
+  "repository": "",
+  "author": "Juho Rutila <juho.rutila@iki.fi>",
+  "keywords": "mythic rpg",
+  "dependencies": {
+  },
+  "engines": {
+    "node": "*"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "parts": [
+    {
+      "name": "mythic",
+      "client_hooks": {
+        "postAceInit": "ep_mythic/static/js/index"
+      },
+      "hooks": {
+        "eejsBlock_body": "ep_mythic/index",
+        "eejsBlock_scripts": "ep_mythic/index",
+        "socketio": "ep_mythic/index"
+      }
+    }
+  ]
+}

@@ -67,6 +67,7 @@ function Mythic(fFocus , fPoints) {
 		
 	//set starting chaos factor
 	this.ChaosFactor = parseInt(tempArray[0]);
+	this.Threads = {};
 	//get game description
 	gameDescrip = tempArray[1];
 	//set starting Favour Points

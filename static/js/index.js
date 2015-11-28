@@ -31,13 +31,20 @@ ep_mythic.prototype.initElements = function() {
     this.$newScene = $("#mythic_toolbar #scene_b");
     this.$sceneRoll = $("#mythic_toolbar #scene_r");
     this.$random = $("#mythic_toolbar #random_n");
+    this.$newThread = $("#mythic_sidebar #newthread");
+    this.$threads = $("#mythic_sidebar #threads");
+    this.$newNPC = $("#mythic_sidebar #newnpc");
+    this.$npcs = $("#mythic_sidebar #npcs");
 }
 
 ep_mythic.prototype.listenEvents = function() {
     var self = this;
     this.socket.on("engineUpdate", function(engine) {
         self.setEngine(engine);
-    })
+    });
+    this.socket.on("threadAdd", function(th) {
+        self.threadAdd(th.thread, th.threadId);
+    });
 }
 
 ep_mythic.prototype.writeText = function(text) {
@@ -59,6 +66,7 @@ ep_mythic.prototype.init = function() {
     var self = this;
     //self.engine = Mythic();
     self.loadEngine(function(eng) {
+        _.each(eng.Threads, self.threadAdd, self);
         self.setEngine(eng);
     });
 }
@@ -78,6 +86,12 @@ ep_mythic.prototype.saveEngine = function() {
     }); 
 }
 
+ep_mythic.prototype.addThread = function(thread) {
+    var req = { padId: this.padId, thread: thread };
+    this.socket.emit('addThread', req, function(res) {
+    });
+}
+
 ep_mythic.prototype.setEngine = function(eng) {
     if (eng instanceof Mythic) {
         this.engine = eng;
@@ -93,6 +107,11 @@ ep_mythic.prototype.setEngine = function(eng) {
         engine.ChaosFactor = eng.ChaosFactor;
     }
     this.onEngineUpdate();
+}
+
+ep_mythic.prototype.threadAdd = function(thread, threadId) {
+    var $li = $("<li class='thread'>"+thread+"<span class='buttonicons'></span></li>").attr("data-id", threadId);
+    $li.insertBefore("#newthread");
 }
 
 // Override
@@ -173,6 +192,13 @@ function initUI() {
 		    alter = "\n" + alter;
 		}
         m.writeText(alter + "(Scene roll: "+rInt+")");
+    });
+    
+    m.$newThread.keypress(function(e) {
+        if (e.which == 13) { // Enter
+            m.addThread(m.$newThread.val());
+            m.$newThread.val("");
+        }
     });
     
     m.$random.click(function() {

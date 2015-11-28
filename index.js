@@ -6,7 +6,9 @@ var mythicManager = require('./mythicManager');
 var mythic = require('./mythic');
 
 exports.eejsBlock_body = function(hook_name, args, cb) {
-  args.content = eejs.require('ep_mythic/templates/toolbar.ejs', {settings : false, content: args.content }) + args.content;
+  args.content = eejs.require('ep_mythic/templates/toolbar.ejs', {settings : false, content: args.content })
+                + args.content
+                + eejs.require('ep_mythic/templates/sidebar.ejs', {settings : false })
   return cb();
 }
 
@@ -41,6 +43,15 @@ exports.socketio = function (hook_name, args, cb){
       mythicManager.setEngine(padId, engine, function (err){
         socket.broadcast.to(padId).emit('engineUpdate', engine);
         callback(err);
+      });
+    });
+    
+    socket.on('addThread', function(data, callback) {
+      var padId = data.padId;
+      var thread = data.thread;
+      mythicManager.addThread(padId, thread, function(threadId, thread) {
+        socket.emit("threadAdd", { threadId: threadId, thread: thread });
+        callback(threadId, thread);
       });
     });
   });

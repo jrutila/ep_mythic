@@ -31,6 +31,7 @@ ep_mythic.prototype.initElements = function() {
     this.$newScene = $("#mythic_toolbar #scene_b");
     this.$sceneRoll = $("#mythic_toolbar #scene_r");
     this.$random = $("#mythic_toolbar #random_n");
+    this.$focus = $("#mythic_toolbar #focus_n");
     this.$newThread = $("#mythic_sidebar #newthread");
     this.$newNpc = $("#mythic_sidebar #newnpc");
     this.$threads = $("#mythic_sidebar #threads");
@@ -352,6 +353,12 @@ function initUI() {
     
     m.$random.click(function() {
         m.writeText(m.engine.getRandom());
+    });
+    
+    m.$focus.click(function() {
+		var rInt = Math.ceil(Math.random()*100);
+		var fText = m.engine.getFocus(rInt);
+		m.writeText(fText + " (Roll was: "+rInt+")");
     });
     
     m.onEngineUpdate = function() {

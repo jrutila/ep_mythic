@@ -35,6 +35,8 @@ ep_mythic.prototype.initElements = function() {
     this.$threads = $("#mythic_sidebar #threads");
     this.$newNPC = $("#mythic_sidebar #newnpc");
     this.$npcs = $("#mythic_sidebar #npcs");
+    this.sel_input = ".thread input";
+    this.sel_title = ".thread .title";
 }
 
 ep_mythic.prototype.listenEvents = function() {
@@ -44,6 +46,12 @@ ep_mythic.prototype.listenEvents = function() {
     });
     this.socket.on("threadAdd", function(th) {
         self.threadAdd(th.thread, th.threadId);
+    });
+    this.socket.on("threadUpdate", function(th) {
+        self.threadUpdate(th.thread, th.threadId);
+    });
+    this.socket.on("threadDelete", function(th) {
+        self.threadDelete(th.threadId);
     });
 }
 
@@ -66,8 +74,10 @@ ep_mythic.prototype.init = function() {
     var self = this;
     //self.engine = Mythic();
     self.loadEngine(function(eng) {
-        _.each(eng.Threads, self.threadAdd, self);
-        self.setEngine(eng);
+        if (eng) {
+            eng.Threads && _.each(eng.Threads, self.threadAdd, self);
+            self.setEngine(eng);
+        }
     });
 }
 
@@ -87,8 +97,34 @@ ep_mythic.prototype.saveEngine = function() {
 }
 
 ep_mythic.prototype.addThread = function(thread) {
+    if (typeof(thread) == "string")
+        thread = { title: thread }
     var req = { padId: this.padId, thread: thread };
     this.socket.emit('addThread', req, function(res) {
+    });
+}
+
+ep_mythic.prototype.editThread = function(threadId, newTitle) {
+    var req = { padId: this.padId, threadId: threadId, title: newTitle };
+    this.socket.emit('titleThread', req, function(res, thread) {
+    });
+}
+
+ep_mythic.prototype.stopThread = function(threadId) {
+    var req = { padId: this.padId, threadId: threadId };
+    this.socket.emit('stopThread', req, function(res, thread) {
+    });
+}
+
+ep_mythic.prototype.deleteThread = function(threadId) {
+    var req = { padId: this.padId, threadId: threadId };
+    this.socket.emit('deleteThread', req, function(res, thread) {
+    });
+}
+
+ep_mythic.prototype.playThread = function(threadId) {
+    var req = { padId: this.padId, threadId: threadId };
+    this.socket.emit('playThread', req, function(res, thread) {
     });
 }
 
@@ -109,9 +145,29 @@ ep_mythic.prototype.setEngine = function(eng) {
     this.onEngineUpdate();
 }
 
+ep_mythic.prototype._$thread = function(thread, threadId) {
+    var action = "stop";
+    if (thread.status == "passive")
+        action = "play";
+    // TODO: To some template engine, please
+    return $("<li class='thread "+thread.status+"'><span class='title'>"+thread.title+"</span><input type='text' value='"+thread.title+"'/>\
+    <div class='control'><span class='thread_control "+action+"'></span><span class='thread_control delete'></span></div></li>").attr("data-id", threadId);
+}
+
 ep_mythic.prototype.threadAdd = function(thread, threadId) {
-    var $li = $("<li class='thread'>"+thread+"<span class='buttonicons'></span></li>").attr("data-id", threadId);
-    $li.insertBefore("#newthread");
+    if (thread.status == "deleted") return;
+    var $li = this._$thread(thread, threadId);
+    var $nth = $("#newthread").parent();
+    $li.insertBefore($nth);
+}
+ep_mythic.prototype.threadUpdate = function(thread, threadId) {
+    var $li = $(".thread[data-id='"+threadId+"']");
+    var $new = this._$thread(thread, threadId);
+    $li.replaceWith($new);
+}
+ep_mythic.prototype.threadDelete = function(threadId) {
+    var $li = $(".thread[data-id='"+threadId+"']");
+    $li.remove();
 }
 
 // Override
@@ -167,6 +223,17 @@ function initUI() {
         m.$fateQ.val("");
     });
     
+    $(document).on("click", "#mythic_sidebar .thread_control", function(th) {
+        var $trg = $(th.target);
+        var thId = $trg.parents(".thread").attr("data-id");
+        if ($trg.is(".stop"))
+            m.stopThread(thId);
+        else if ($trg.is(".play"))
+            m.playThread(thId);
+        else if ($trg.is(".delete"))
+            m.deleteThread(thId);
+    });
+    
     m.$chaos.change(function(val) {
         var c = parseInt($(val.currentTarget).val());
         m.setChaos(c);
@@ -199,6 +266,21 @@ function initUI() {
             m.addThread(m.$newThread.val());
             m.$newThread.val("");
         }
+    });
+    
+    $(document).on("keypress", m.sel_input, function(th) {
+        if (th.which == 13) { // Enter
+            var $trg = $(th.target);
+            var thId = $trg.parents(".thread").attr("data-id");
+            // Edit thread title
+            m.editThread(thId, $trg.val());
+        }
+    });
+    
+    $(document).on("click", m.sel_title, function(th) {
+        var $trg = $(th.target);
+        if ($trg.parents(".thread").is(".active"))
+            $trg.parents(".thread").addClass("editing");
     });
     
     m.$random.click(function() {

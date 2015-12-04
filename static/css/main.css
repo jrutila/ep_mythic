@@ -1,0 +1,59 @@
+.thread {
+  position: relative;
+}
+.thread .control {
+  position: absolute;
+  right: 6px;
+  display: none;
+}
+
+.thread:hover .control {
+  display: inline-block;
+}
+  
+.thread_control {
+  font-family: "fontawesome-etherpad";
+  color:#666;
+  font-size:12px;
+  padding-top:2px;
+  line-height:13px;
+  height: 16px;
+  width: 16px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.stop:before{
+  content: "\e82d";
+}
+
+.play:before{
+  content: "\e82c";
+}
+.delete:before{
+  content: "\e82a";
+}
+
+.thread.passive {
+  text-decoration: line-through;
+}
+
+.thread.active .delete {
+  display: none;
+}
+
+.thread .title, .thread input {
+  width: calc(100% - 30px);
+}
+
+.thread input {
+  display: none;
+}
+
+.thread.editing input {
+  display: block;
+}
+.thread.editing .title, .thread.editing .thread_control {
+  display: none;
+}

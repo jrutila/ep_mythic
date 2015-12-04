@@ -35,6 +35,56 @@ exports.addThread = function(padId, thread, callback) {
   });
 }
 
+exports.addNpc = function(padId, npc, callback) {
+  var nid = "n-" + randomString(8);
+  var self = this;
+  
+  db.get("mythic:" + padId, function(err, engine) {
+    if (ERR(err, callback)) return;
+    if (engine == null) return;
+    
+    if (engine.Npcs == null) engine.Npcs = {};
+    engine.Npcs[nid] = npc;
+    self.setEngine(padId, engine, function(e) {
+      callback(nid, npc);
+    });
+  });
+}
+
+exports.editNpc = function(padId, npcId, data, callback) {
+  var thid = npcId;
+  var self = this;
+  
+  db.get("mythic:" + padId, function(err, engine) {
+    if (ERR(err, callback)) return;
+    if (engine == null) return;
+    
+    if (engine.Npcs == null) return;
+    var npc = engine.Npcs[thid];
+    npc.title = data.title || npc.title;
+    self.setEngine(padId, engine, function(e) {
+      callback(thid, npc);
+    });
+  });
+}
+
+exports.deleteNpc = function(padId, npcId, callback) {
+  var nid = npcId;
+  var self = this;
+  
+  db.get("mythic:" + padId, function(err, engine) {
+    if (ERR(err, callback)) return;
+    if (engine == null) return;
+    
+    if (engine.Npcs == null) engine.Npcs = {};
+    var npc = engine.Npcs[nid];
+    npc.status = "deleted";
+    self.setEngine(padId, engine, function(e) {
+      callback(nid, npc);
+    });
+  });
+}
+
 exports.editThread = function(padId, threadId, data, callback) {
   var thid = threadId;
   var self = this;

@@ -32,11 +32,12 @@ ep_mythic.prototype.initElements = function() {
     this.$sceneRoll = $("#mythic_toolbar #scene_r");
     this.$random = $("#mythic_toolbar #random_n");
     this.$newThread = $("#mythic_sidebar #newthread");
+    this.$newNpc = $("#mythic_sidebar #newnpc");
     this.$threads = $("#mythic_sidebar #threads");
     this.$newNPC = $("#mythic_sidebar #newnpc");
     this.$npcs = $("#mythic_sidebar #npcs");
-    this.sel_input = ".thread input";
-    this.sel_title = ".thread .title";
+    this.sel_input = ".thread input, .npc input";
+    this.sel_title = "#mythic_sidebar .title";
 }
 
 ep_mythic.prototype.listenEvents = function() {
@@ -52,6 +53,15 @@ ep_mythic.prototype.listenEvents = function() {
     });
     this.socket.on("threadDelete", function(th) {
         self.threadDelete(th.threadId);
+    });
+    this.socket.on("npcAdd", function(th) {
+        self.npcAdd(th.npc, th.npcId);
+    });
+    this.socket.on("npcUpdate", function(th) {
+        self.npcUpdate(th.npc, th.npcId);
+    });
+    this.socket.on("npcDelete", function(th) {
+        self.npcDelete(th.npcId);
     });
 }
 
@@ -76,6 +86,7 @@ ep_mythic.prototype.init = function() {
     self.loadEngine(function(eng) {
         if (eng) {
             eng.Threads && _.each(eng.Threads, self.threadAdd, self);
+            eng.Npcs && _.each(eng.Npcs, self.npcAdd, self);
             self.setEngine(eng);
         }
     });
@@ -101,6 +112,25 @@ ep_mythic.prototype.addThread = function(thread) {
         thread = { title: thread }
     var req = { padId: this.padId, thread: thread };
     this.socket.emit('addThread', req, function(res) {
+    });
+}
+
+ep_mythic.prototype.addNpc = function(npc) {
+    if (typeof(npc) == "string")
+        npc = { title: npc }
+    var req = { padId: this.padId, npc: npc };
+    this.socket.emit('addNpc', req, function(res) {
+    });
+}
+
+ep_mythic.prototype.editNpc = function(npcId, newTitle) {
+    var req = { padId: this.padId, npcId: npcId, title: newTitle };
+    this.socket.emit('titleNpc', req, function(res, thread) {
+    });
+}
+ep_mythic.prototype.deleteNpc = function(npcId) {
+    var req = { padId: this.padId, npcId: npcId };
+    this.socket.emit('deleteNpc', req, function(res, thread) {
     });
 }
 
@@ -154,6 +184,12 @@ ep_mythic.prototype._$thread = function(thread, threadId) {
     <div class='control'><span class='thread_control "+action+"'></span><span class='thread_control delete'></span></div></li>").attr("data-id", threadId);
 }
 
+ep_mythic.prototype._$npc = function(npc, npcId) {
+    // TODO: To some template engine, please
+    return $("<li class='npc'><span class='title'>"+npc.title+"</span><input type='text' value='"+npc.title+"'/>\
+    <div class='control'><span class='thread_control delete'></span></div></li>").attr("data-id", npcId);
+}
+
 ep_mythic.prototype.threadAdd = function(thread, threadId) {
     if (thread.status == "deleted") return;
     var $li = this._$thread(thread, threadId);
@@ -167,6 +203,23 @@ ep_mythic.prototype.threadUpdate = function(thread, threadId) {
 }
 ep_mythic.prototype.threadDelete = function(threadId) {
     var $li = $(".thread[data-id='"+threadId+"']");
+    $li.remove();
+}
+
+// NPCs
+ep_mythic.prototype.npcAdd = function(npc, npcId) {
+    if (npc.status == "deleted") return;
+    var $li = this._$npc(npc, npcId);
+    var $nth = $("#newnpc").parent();
+    $li.insertBefore($nth);
+}
+ep_mythic.prototype.npcUpdate = function(npc, npcId) {
+    var $li = $(".npc[data-id='"+npcId+"']");
+    var $new = this._$npc(npc, npcId);
+    $li.replaceWith($new);
+}
+ep_mythic.prototype.npcDelete = function(npcId) {
+    var $li = $(".npc[data-id='"+npcId+"']");
     $li.remove();
 }
 
@@ -225,13 +278,17 @@ function initUI() {
     
     $(document).on("click", "#mythic_sidebar .thread_control", function(th) {
         var $trg = $(th.target);
-        var thId = $trg.parents(".thread").attr("data-id");
+        var $par = $trg.parents("li");
+        var thId = $par.attr("data-id");
         if ($trg.is(".stop"))
             m.stopThread(thId);
         else if ($trg.is(".play"))
             m.playThread(thId);
         else if ($trg.is(".delete"))
-            m.deleteThread(thId);
+            if ($par.is(".thread"))
+                m.deleteThread(thId);
+            else if ($par.is(".npc"))
+                m.deleteNpc(thId);
     });
     
     m.$chaos.change(function(val) {
@@ -268,19 +325,29 @@ function initUI() {
         }
     });
     
+    m.$newNpc.keypress(function(e) {
+        if (e.which == 13) { // Enter
+            m.addNpc(m.$newNpc.val());
+            m.$newNpc.val("");
+        }
+    });
+    
     $(document).on("keypress", m.sel_input, function(th) {
         if (th.which == 13) { // Enter
             var $trg = $(th.target);
-            var thId = $trg.parents(".thread").attr("data-id");
+            var thId = $trg.parents("li").attr("data-id");
             // Edit thread title
-            m.editThread(thId, $trg.val());
+            if ($trg.parents("li").is(".thread"))
+                m.editThread(thId, $trg.val());
+            else if ($trg.parents("li").is(".npc"))
+                m.editNpc(thId, $trg.val());
         }
     });
     
     $(document).on("click", m.sel_title, function(th) {
         var $trg = $(th.target);
-        if ($trg.parents(".thread").is(".active"))
-            $trg.parents(".thread").addClass("editing");
+        if ($trg.parents("li").is(":not(.passive)"))
+            $trg.parents("li").addClass("editing");
     });
     
     m.$random.click(function() {

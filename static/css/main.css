@@ -1,14 +1,18 @@
-.thread {
+#mythic_sidebar li {
   position: relative;
 }
-.thread .control {
+#mythic_sidebar li .control {
   position: absolute;
   right: 6px;
   display: none;
 }
 
-.thread:hover .control {
+#mythic_sidebar li:hover .control {
   display: inline-block;
+}
+
+#mythic_sidebar ul {
+  list-style: none;
 }
   
 .thread_control {
@@ -35,25 +39,29 @@
   content: "\e82a";
 }
 
-.thread.passive {
+#mythic_sidebar .passive {
   text-decoration: line-through;
 }
 
-.thread.active .delete {
+#mythic_sidebar .active .delete {
   display: none;
 }
 
-.thread .title, .thread input {
+#mythic_sidebar .title, #mythic_sidebar input {
   width: calc(100% - 30px);
 }
 
-.thread input {
+#mythic_sidebar input {
   display: none;
 }
 
-.thread.editing input {
+#mythic_sidebar #newnpc, #mythic_sidebar #newthread {
   display: block;
 }
-.thread.editing .title, .thread.editing .thread_control {
+
+#mythic_sidebar .editing input {
+  display: block;
+}
+#mythic_sidebar .editing .title, #mythic_sidebar .editing .thread_control {
   display: none;
 }

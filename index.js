@@ -48,6 +48,37 @@ exports.socketio = function (hook_name, args, cb){
       });
     });
     
+    socket.on('addNpc', function(data, callback) {
+      var padId = data.padId;
+      var npc = { title: data.npc.title };
+      mythicManager.addNpc(padId, npc, function(npcId, npc) {
+        socket.broadcast.to(padId).emit("npcAdd", { npcId: npcId, npc: npc });
+        socket.emit("npcAdd", { npcId: npcId, npc: npc });
+        callback(npcId, npc);
+      });
+    });
+    
+    socket.on('deleteNpc', function(data, callback) {
+      var padId = data.padId;
+      var npcId = data.npcId;
+      mythicManager.deleteNpc(padId, npcId, function(npcId) {
+        socket.broadcast.to(padId).emit("npcDelete", { npcId: npcId });
+        socket.emit("npcDelete", { npcId: npcId });
+        callback(npcId);
+      });
+    });
+    
+    socket.on('titleNpc', function(data, callback) {
+      var padId = data.padId;
+      var npcId = data.npcId;
+      var npc = { title: data.title };
+      mythicManager.editNpc(padId, npcId, npc, function(npcId, npc) {
+        socket.broadcast.to(padId).emit("npcUpdate", { npcId: npcId, npc: npc });
+        socket.emit("npcUpdate", { npcId: npcId, npc: npc });
+        callback(npcId, npc);
+      });
+    });
+    
     socket.on('addThread', function(data, callback) {
       var padId = data.padId;
       var thread = { title: data.thread.title };

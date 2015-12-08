@@ -53,12 +53,16 @@ ep_mythic.prototype.initElements = function() {
     this.$npcs = $("#mythic_sidebar #npcs");
     this.sel_input = ".thread input, .npc input";
     this.sel_title = "#mythic_sidebar .title";
+    this.$settings_templates = $("#mythic-texttemplates");
 }
 
 ep_mythic.prototype.listenEvents = function() {
     var self = this;
     this.socket.on("engineUpdate", function(engine) {
         self.setEngine(engine);
+    });
+    this.socket.on("settingsUpdate", function(settings) {
+        self.setSettings(settings);
     });
     this.socket.on("threadAdd", function(th) {
         self.threadAdd(th.thread, th.threadId);
@@ -120,6 +124,13 @@ ep_mythic.prototype.saveEngine = function() {
 
     this.socket.emit('setMythic', req, function (res){
     }); 
+}
+
+ep_mythic.prototype.saveSettings = function() {
+    var req = { padId: this.padId, settings: { texttemplates: this.$settings_templates.val() }};
+    
+    this.socket.emit('saveSettings', req, function(res) {
+    });
 }
 
 ep_mythic.prototype.addThread = function(thread) {
@@ -186,8 +197,13 @@ ep_mythic.prototype.setEngine = function(eng) {
         }
         
         engine.ChaosFactor = eng.ChaosFactor;
+        engine.Settings = eng.Settings;
     }
     this.onEngineUpdate();
+}
+
+ep_mythic.prototype.setSettings = function(settings) {
+    this.$settings_templates.val(settings.texttemplates);
 }
 
 ep_mythic.prototype._$thread = function(thread, threadId) {
@@ -309,6 +325,11 @@ function initUI() {
                 m.deleteNpc(thId);
     });
     
+    m.$settings_templates.change(function() {
+        m.saveSettings();
+    });
+    
+    
     m.$chaos.change(function(val) {
         var origChaos = m.engine.ChaosFactor;
         var c = parseInt($(val.currentTarget).val());
@@ -395,6 +416,8 @@ function initUI() {
         } else {
             this.$toolbar.removeClass("start");
             this.$chaos.val(this.engine.ChaosFactor);
+            if (this.engine.Settings)
+                this.setSettings(this.engine.Settings);
         }
     };
 }

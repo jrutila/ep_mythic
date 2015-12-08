@@ -53,6 +53,16 @@ exports.socketio = function (hook_name, args, cb){
       });
     });
     
+    // Save settings
+    socket.on('saveSettings', function (data, callback) {
+      var padId = data.padId;
+      var settings = data.settings;
+      mythicManager.setSettings(padId, settings, function (sett){
+        socket.broadcast.to(padId).emit('settingsUpdate', sett);
+        callback(sett);
+      });
+    });
+    
     socket.on('addNpc', function(data, callback) {
       var padId = data.padId;
       var npc = { title: data.npc.title };

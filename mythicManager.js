@@ -18,6 +18,20 @@ exports.setEngine = function(padId, engine, callback) {
   callback(engine);
 }
 
+exports.setSettings = function(padId, settings, callback) {
+  var self = this;
+  db.get("mythic:" + padId, function(err, engine) {
+    if (ERR(err, callback)) return;
+    if (engine == null) return;
+    
+    if (engine.Settings == null) engine.Settings = {};
+    engine.Settings['texttemplates'] = settings.texttemplates;
+    self.setEngine(padId, engine, function(e) {
+      callback(e.Settings);
+    });
+  });
+}
+
 exports.addThread = function(padId, thread, callback) {
   var thid = "t-" + randomString(8);
   var self = this;

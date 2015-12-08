@@ -8,7 +8,8 @@
       "hooks": {
         "eejsBlock_body": "ep_mythic/index",
         "eejsBlock_scripts": "ep_mythic/index",
-        "socketio": "ep_mythic/index"
+        "socketio": "ep_mythic/index",
+        "eejsBlock_globalSettings": "ep_mythic/index"
       }
     }
   ]

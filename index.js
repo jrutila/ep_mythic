@@ -19,6 +19,11 @@ exports.eejsBlock_scripts = function(hook_name, args, cb) {
   return cb();
 }
 
+exports.eejsBlock_globalSettings = function (hook_name, args, cb) {
+  args.content = args.content + eejs.require("ep_mythic/templates/settings.ejs");
+  return cb();
+};
+
 exports.socketio = function (hook_name, args, cb){
   var app = args.app;
   var io = args.io;

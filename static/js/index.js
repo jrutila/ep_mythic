@@ -3,6 +3,20 @@ var $ = require('ep_etherpad-lite/static/js/rjquery').$;
 var _ = require('ep_etherpad-lite/static/js/underscore');
 var Mythic = require("ep_mythic/static/js/engine").engine;
 var padeditor = require('ep_etherpad-lite/static/js/pad_editor').padeditor;
+var sprintf = require("ep_mythic/static/js/lib/sprintf.min").sprintf;
+
+var SCENE = 0;
+var QUESTION = 1;
+var CHAOS_UP = 2;
+var CHAOS_DOWN = 3;
+var FOCUS = 4;
+var INTERRUPTED = 5;
+var ALTERED = 6;
+var SCENE_ROLL = 7;
+
+function template(i) {
+  return $("#mythic-texttemplates").val().split("\n")[i];
+}
 
 function ep_mythic(context) {
     var loc = document.location;
@@ -272,7 +286,10 @@ function initUI() {
         var a = f[0];
         if (Math.floor(a/10) == a-Math.floor(a/10)*10)
             doubles = " DOUBLES!"
-        var text = q + " (" + f_text + ") " + f[1] + " (Roll was: " + f[0] + doubles + ")";
+            
+        var tmpl = template(QUESTION);
+        var v = { question: q, possibility: f_text, result: f[1], roll: f[0], doubles: doubles };
+        var text = sprintf(tmpl, v);
         m.writeText(text);
         m.$fateQ.val("");
     });
@@ -293,30 +310,37 @@ function initUI() {
     });
     
     m.$chaos.change(function(val) {
+        var origChaos = m.engine.ChaosFactor;
         var c = parseInt($(val.currentTarget).val());
         m.setChaos(c);
         m.saveEngine();
-        m.writeText("Chaos is now: "+c);
+        var chaosText = "%(chaos)d";
+        if (origChaos < c)
+            chaosText = template(CHAOS_UP);
+        if (origChaos > c)
+            chaosText = template(CHAOS_DOWN);
+        m.writeText(sprintf(chaosText, { chaos: c }));
     });
     
     m.$newScene.click(function() {
 		var scene = m.$scene.val().trim();
-        m.writeText("Scene ##: "+ scene + "\n" + "scene start");
+        var sceneText = template(SCENE);
+        m.writeText(sprintf(sceneText, { number: 0, title: scene }));
         m.$scene.val("");
     });
     
     m.$sceneRoll.click(function() {
 		var rInt = Math.ceil(Math.random()*10);
-		var alter = "";
+		var alter = template(SCENE_ROLL);
 		if (rInt <= m.engine.ChaosFactor)
 		{
 		    if (rInt % 2 == 0)
-		        alter = "The scene is interrupted!";
+                alter = template(INTERRUPTED);
 		    else
-		        alter = "The scene is altered!";
+                alter = template(ALTERED);
 		    alter = "\n" + alter;
 		}
-        m.writeText(alter + "(Scene roll: "+rInt+")");
+        m.writeText(sprintf(alter, { roll: rInt }));
     });
     
     m.$newThread.keypress(function(e) {
@@ -358,7 +382,8 @@ function initUI() {
     m.$focus.click(function() {
 		var rInt = Math.ceil(Math.random()*100);
 		var fText = m.engine.getFocus(rInt);
-		m.writeText(fText + " (Roll was: "+rInt+")");
+		var focusText = template(FOCUS);
+		m.writeText(sprintf(focusText, { focus: fText, roll: rInt }));
     });
     
     m.onEngineUpdate = function() {

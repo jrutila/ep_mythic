@@ -378,6 +378,10 @@ function initUI() {
         }
     });
     
+    $(".write_to_pad").click(function(e) {
+       debugger; 
+    });
+    
     $(document).on("keypress", m.sel_input, function(th) {
         if (th.which == 13) { // Enter
             var $trg = $(th.target);

@@ -15,7 +15,7 @@
   list-style: none;
 }
   
-.thread_control {
+.thread_control, .write_to_pad {
   font-family: "fontawesome-etherpad";
   color:#666;
   font-size:12px;
@@ -37,6 +37,9 @@
 }
 .delete:before{
   content: "\e82a";
+}
+.write_to_pad:before{
+  content: "\e834";
 }
 
 #mythic_sidebar .passive {

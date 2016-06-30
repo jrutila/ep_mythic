@@ -1,6 +1,6 @@
 {
   "name": "ep_mythic",
-  "version": "0.0.0",
+  "version": "1.2.0",
   "description": "A Mythic Game Emulator plugin for Etherpad",
   "repository": "",
   "author": "Juho Rutila <juho.rutila@iki.fi>",

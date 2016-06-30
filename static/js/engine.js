@@ -3,19 +3,17 @@ function Mythic(fFocus , fPoints) {
 	//fate table
 	var fateArray = new Array();
 
-	fateArray[0] = new Array(50 , 25 , 10 , 5 , 5 , 0 , 0 , -20 , -20 , -40 , -40 , -55 , -65);
-	fateArray[1] = new Array(75 , 50 , 25 , 15 , 10 , 5 , 5 , 0 , 0 , -20 , -20 , -35 , -45);
-	fateArray[2] = new Array(90 , 75 , 50 , 35 , 25 , 15 , 10 , 5 , 5 , 0 , 0 , -15 , -25);
-	fateArray[3] = new Array(95 , 85 , 65 , 50 , 45 , 25 , 15 , 10 , 5 , 5 , 5 , -5 , -15);
-	fateArray[4] = new Array(100 , 90 , 75 , 55 , 50 , 35 , 20 , 15 , 10 , 5 , 5 , 0 , -10);
-	fateArray[5] = new Array(105 , 95 , 85 , 75 , 65 , 50 , 35 , 25 , 15 , 10 , 10 , 5 , -5);
-	fateArray[6] = new Array(110 , 95 , 90 , 85 , 80 , 65 , 50 , 45 , 25 , 20 , 15 , 5 , 0);
-	fateArray[7] = new Array(115 , 100 , 95 , 90 , 85 , 75 , 55 , 50 , 35 , 25 ,20 , 10 , 5);
-	fateArray[8] = new Array(120 , 105 , 95 , 95 , 90 , 85 , 75 , 65 , 50 , 45 , 35 , 15 , 5);
-	fateArray[9] = new Array(125 , 115 , 100 , 95 , 95 , 90 , 80 , 75 , 55 , 50 , 45 , 20 , 10);
-	fateArray[10] = new Array(130 , 125 , 110 , 95 , 95 , 90 , 85 , 80 , 65 , 55 , 50 , 25 , 10);
-	fateArray[11] = new Array(150 , 145 , 130 , 100 , 100 , 95 , 95 , 90 , 85 , 80 , 75 , 50 , 25);
-	fateArray[12] = new Array(170 , 165 , 150 , 120 , 120 , 100 , 100 , 95 , 95 , 90 , 90 , 75 , 50);
+	fateArray[0] = new Array( 50, 25, 15, 10,  5,  5,  0,  0,-20);
+	fateArray[1] = new Array( 75, 50, 35, 25, 15, 10,  5,  5,  0);
+	fateArray[2] = new Array( 85, 65, 50, 45, 25, 15, 10,  5,  5);
+	fateArray[3] = new Array( 90, 75, 55, 50, 35, 20, 15, 10,  5);
+	fateArray[4] = new Array( 95, 85, 75, 65, 50, 35, 25, 15, 10);
+	fateArray[5] = new Array( 95, 90, 85, 80, 65, 50, 45, 25, 20);
+	fateArray[6] = new Array(100, 95, 90, 85, 75, 55, 50, 35, 25);
+	fateArray[7] = new Array(105, 95, 95, 90, 85, 75, 65, 50, 45);
+	fateArray[8] = new Array(115,100, 95, 95, 90, 80, 75, 55, 50);
+	fateArray[9] = new Array(125,110, 95, 95, 90, 85, 80, 65, 55);
+	fateArray[10]= new Array(145,130,100,100, 95, 95, 90, 85, 80);
 	
 	//focus table
 	var focusArray = new Array();
@@ -91,8 +89,8 @@ function Mythic(fFocus , fPoints) {
 		this.fAcross = fAcross;
 		var gArray = new Array(0 , 0 , 0);
 		
-		if(0 <= fDown <=12) {
-			if(0 <= fAcross <= 12) {
+		if(0 <= fDown <=10) {
+			if(0 <= fAcross <= 8) {
 				//odds for success
 				gArray[1] = fateArray[fDown][fAcross];
 				//odds for exceptional yes

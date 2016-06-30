@@ -258,7 +258,7 @@ ep_mythic.prototype.npcDelete = function(npcId) {
 ep_mythic.prototype.onEngineUpdate = function() {};
 
 ep_mythic.prototype.fate = function(fDown) {
-    return this.engine.roll(fDown, this.engine.ChaosFactor);
+    return this.engine.roll(fDown, 9-this.engine.ChaosFactor); // Across is from 9 to 1
 }
 
 ep_mythic.prototype.setChaos = function(chaos) {
